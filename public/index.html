@@ -12,10 +12,23 @@
   <meta name="apple-mobile-web-app-title" content="Nonna Papera" />
   <meta name="theme-color" content="#FAF1D6" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-  <link rel="apple-touch-startup-image" href="/icons/splash.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon.png" />
   <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png" />
   <link rel="manifest" href="/manifest.json" />
+
+  <!-- iOS splash screens (each iPhone needs its own pixel-perfect size) -->
+  <link rel="apple-touch-startup-image" href="/icons/splash-1290x2796.png"
+        media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="/icons/splash-1284x2778.png"
+        media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="/icons/splash-1179x2556.png"
+        media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="/icons/splash-1170x2532.png"
+        media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="/icons/splash-1125x2436.png"
+        media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="/icons/splash-828x1792.png"
+        media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
 
   <!-- Open Graph / link previews -->
   <meta property="og:title" content="Nonna Papera" />
@@ -87,16 +100,12 @@
     }
 
     .mascot {
-      width: 96px;
-      height: 96px;
-      margin: 0 auto 12px;
-      border-radius: 50%;
-      background: var(--accent);
+      width: 128px;
+      height: 128px;
+      margin: 0 auto 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      box-shadow: var(--shadow);
     }
 
     .mascot img {
@@ -320,9 +329,37 @@
       font-weight: 500;
     }
 
+    /* Toast (for the recipe picker placeholder) */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(24px + env(safe-area-inset-bottom));
+      transform: translateX(-50%) translateY(12px);
+      max-width: 320px;
+      width: calc(100% - 32px);
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--text);
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(61, 41, 20, 0.10);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease, transform 220ms ease;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     /* Reduce motion respect */
     @media (prefers-reduced-motion: reduce) {
-      .step-btn, .recipe-pill { transition: none; }
+      .step-btn, .recipe-pill, .toast { transition: none; }
     }
   </style>
 </head>
@@ -398,6 +435,8 @@
     </div>
 
   </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
     // Recipe definitions. Add more here later.
@@ -480,9 +519,17 @@
     decBtn.addEventListener('click', () => step(-STEP));
     incBtn.addEventListener('click', () => step(STEP));
 
-    // Future recipe picker placeholder
+    // Future recipe picker placeholder — for now, show a friendly message.
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    function showToast(msg, ms = 4500) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), ms);
+    }
     document.getElementById('recipe-pill').addEventListener('click', () => {
-      // No-op for now. Will become a recipe picker once there's more than one.
+      showToast('There is currently only one ratio available. Check back in the future for more recipes, such as ravioli.');
     });
 
     // Initial render
