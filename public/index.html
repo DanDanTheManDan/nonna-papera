@@ -329,6 +329,46 @@
       font-weight: 500;
     }
 
+    /* Launch overlay — full-screen cream with the big duck, fades on load */
+    .intro {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 6%;
+      cursor: pointer;
+      transition: opacity 650ms ease-out;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .intro img {
+      max-width: 100%;
+      max-height: 70vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      animation: introIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+    }
+
+    .intro.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes introIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+
+    /* If the user prefers reduced motion, skip the scale-in but still fade out */
+    @media (prefers-reduced-motion: reduce) {
+      .intro img { animation: none; }
+      .intro { transition: opacity 250ms linear; }
+    }
+
     /* Toast (for the recipe picker placeholder) */
     .toast {
       position: fixed;
@@ -364,6 +404,11 @@
   </style>
 </head>
 <body>
+
+  <div id="intro" class="intro" aria-hidden="true">
+    <img src="/icons/nonna-full.png" alt="" />
+  </div>
+
   <main class="app">
 
     <header class="header">
@@ -531,6 +576,24 @@
     document.getElementById('recipe-pill').addEventListener('click', () => {
       showToast('There is currently only one ratio available. Check back in the future for more recipes, such as ravioli.');
     });
+
+    // Launch overlay — fade after a brief beat or on first tap
+    const intro = document.getElementById('intro');
+    let introHidden = false;
+    function hideIntro() {
+      if (introHidden || !intro) return;
+      introHidden = true;
+      intro.classList.add('fade-out');
+      setTimeout(() => intro.remove(), 700);
+    }
+    if (intro) {
+      // Auto-fade after 1.4s
+      setTimeout(hideIntro, 1400);
+      // Or hide instantly on tap/click anywhere on the overlay
+      intro.addEventListener('click', hideIntro);
+      // Hide on any keypress for keyboard users
+      window.addEventListener('keydown', hideIntro, { once: true });
+    }
 
     // Initial render
     calc();
