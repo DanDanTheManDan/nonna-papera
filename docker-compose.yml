@@ -1,0 +1,16 @@
+services:
+  nonna-papera:
+    build: .
+    container_name: nonna-papera
+    restart: unless-stopped
+    ports:
+      # host:container — change the host port if 8080 is taken on your VPS.
+      - "8080:80"
+    # If you put a reverse proxy in front of this on a shared docker network,
+    # uncomment the networks block and remove the ports block above.
+    # networks:
+    #   - web
+
+# networks:
+#   web:
+#     external: true

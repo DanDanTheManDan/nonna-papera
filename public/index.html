@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>Nonna Papera</title>
+  <meta name="description" content="Handmade pasta ratio calculator" />
+
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Nonna Papera" />
+  <meta name="theme-color" content="#FAF1D6" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" href="/icons/favicon.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" />
+
+  <style>
+    :root {
+      --bg: #FAF1D6;
+      --surface: #FFFAE6;
+      --surface-2: #F5E9C4;
+      --border: #ECDCB0;
+      --border-strong: #D8C58A;
+      --text: #3D2914;
+      --text-muted: #A07A45;
+      --text-secondary: #8B5A2B;
+      --accent: #D4A017;
+      --accent-deep: #B58712;
+      --shadow: 0 1px 0 rgba(61, 41, 20, 0.04);
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    body {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px 20px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 8px 0 12px;
+    }
+
+    .mascot {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .mascot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .mascot-fallback {
+      font-family: 'Fraunces', serif;
+      font-size: 42px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .title {
+      font-family: 'Fraunces', serif;
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin: 0;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .tagline {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 4px 0 0;
+      letter-spacing: 0.02em;
+    }
+
+    /* Recipe pill */
+    .recipe-pill {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      min-height: 52px;
+      transition: background 120ms ease;
+    }
+
+    .recipe-pill:active { background: var(--surface-2); }
+
+    .recipe-pill-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .recipe-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .recipe-name {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .recipe-pill-right {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 18px;
+    }
+
+    .card-input { text-align: center; }
+
+    .label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+
+    /* Egg input row */
+    .egg-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .step-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      font-size: 24px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      flex-shrink: 0;
+      font-family: inherit;
+      transition: background 120ms ease, transform 80ms ease;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .step-btn:active {
+      background: var(--surface-2);
+      transform: scale(0.94);
+    }
+
+    .step-btn:focus { outline: none; }
+
+    .egg-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      min-width: 140px;
+    }
+
+    .egg-input {
+      width: 100px;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 44px;
+      color: var(--text);
+      font-weight: 500;
+      text-align: right;
+      padding: 0;
+      font-family: inherit;
+      -webkit-appearance: none;
+      appearance: none;
+      line-height: 1;
+    }
+
+    .egg-input::-webkit-outer-spin-button,
+    .egg-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .egg-unit {
+      font-size: 18px;
+      color: var(--text-muted);
+      margin-left: 4px;
+      font-weight: 500;
+    }
+
+    .egg-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    /* Output rows */
+    .card-output { padding: 6px 18px; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .row:last-child { border-bottom: none; }
+
+    .row-label {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .row-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .row-value {
+      font-size: 26px;
+      color: var(--accent-deep);
+      font-weight: 500;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .row-value-unit {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-left: 3px;
+      font-weight: 500;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 4px 0 0;
+    }
+
+    .footer strong {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Reduce motion respect */
+    @media (prefers-reduced-motion: reduce) {
+      .step-btn, .recipe-pill { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+
+    <header class="header">
+      <div class="mascot" id="mascot">
+        <!-- The image loads from /icons/nonna.png. If missing, the fallback letter shows. -->
+        <img src="/icons/nonna.png" alt="Nonna Papera, the pasta-making duck" onerror="this.style.display='none'; document.getElementById('mascot-fallback').style.display='block';" />
+        <span class="mascot-fallback" id="mascot-fallback" style="display:none;">N</span>
+      </div>
+      <h1 class="title">Nonna Papera</h1>
+      <p class="tagline">for handmade pasta</p>
+    </header>
+
+    <div class="recipe-pill" id="recipe-pill" role="button" tabindex="0" aria-label="Choose recipe">
+      <div class="recipe-pill-left">
+        <div class="recipe-dot"></div>
+        <span class="recipe-name" id="recipe-name">Hearty ribbons</span>
+      </div>
+      <span class="recipe-pill-right">change</span>
+    </div>
+
+    <section class="card card-input" aria-label="Egg weight input">
+      <div class="label">Eggs</div>
+      <div class="egg-row">
+        <button class="step-btn" id="dec-btn" aria-label="Decrease eggs by 10 grams" type="button">&minus;</button>
+        <div class="egg-display">
+          <input
+            class="egg-input"
+            id="egg-grams"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            value="100"
+            aria-label="Egg weight in grams"
+            autocomplete="off"
+          />
+          <span class="egg-unit">g</span>
+        </div>
+        <button class="step-btn" id="inc-btn" aria-label="Increase eggs by 10 grams" type="button">+</button>
+      </div>
+      <div class="egg-hint" id="egg-hint">tap to edit &middot; &asymp; 2 eggs</div>
+    </section>
+
+    <section class="card card-output" aria-label="Calculated ingredients">
+      <div class="row">
+        <div>
+          <div class="row-label">00 flour</div>
+          <div class="row-sub">120% of eggs</div>
+        </div>
+        <div class="row-value"><span id="flour-00">120</span><span class="row-value-unit">g</span></div>
+      </div>
+      <div class="row">
+        <div>
+          <div class="row-label">Semolina</div>
+          <div class="row-sub">80% of eggs</div>
+        </div>
+        <div class="row-value"><span id="semolina">80</span><span class="row-value-unit">g</span></div>
+      </div>
+      <div class="row">
+        <div>
+          <div class="row-label">Water</div>
+          <div class="row-sub">5% of eggs</div>
+        </div>
+        <div class="row-value"><span id="water">5</span><span class="row-value-unit">g</span></div>
+      </div>
+    </section>
+
+    <div class="footer">
+      Total dough <strong id="total">305 g</strong> &middot; serves <strong id="serves">2</strong>
+    </div>
+
+  </main>
+
+  <script>
+    // Recipe definitions. Add more here later.
+    const recipes = {
+      'hearty-ribbons': {
+        name: 'Hearty ribbons',
+        base: 'eggs',
+        ingredients: [
+          { id: 'flour-00', label: '00 flour', ratio: 1.20, sub: '120% of eggs' },
+          { id: 'semolina', label: 'Semolina', ratio: 0.80, sub: '80% of eggs' },
+          { id: 'water',    label: 'Water',    ratio: 0.05, sub: '5% of eggs' }
+        ]
+      }
+    };
+
+    const STANDARD_EGG_GRAMS = 50;
+    const MIN_GRAMS = 10;
+    const MAX_GRAMS = 999;
+    const STEP = 10;
+
+    const input    = document.getElementById('egg-grams');
+    const decBtn   = document.getElementById('dec-btn');
+    const incBtn   = document.getElementById('inc-btn');
+    const eggHint  = document.getElementById('egg-hint');
+    const totalEl  = document.getElementById('total');
+    const servesEl = document.getElementById('serves');
+
+    function clamp(n) {
+      return Math.max(MIN_GRAMS, Math.min(MAX_GRAMS, n));
+    }
+
+    function calc() {
+      const grams = parseInt(input.value, 10) || 0;
+      const recipe = recipes['hearty-ribbons'];
+      let total = grams;
+
+      recipe.ingredients.forEach(ing => {
+        const amt = Math.round(grams * ing.ratio);
+        const el = document.getElementById(ing.id);
+        if (el) el.textContent = amt;
+        total += amt;
+      });
+
+      const eggs = Math.max(1, Math.round(grams / STANDARD_EGG_GRAMS));
+      eggHint.textContent = 'tap to edit · ≈ ' + eggs + ' egg' + (eggs === 1 ? '' : 's');
+      totalEl.textContent = total + ' g';
+      servesEl.textContent = eggs;
+    }
+
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/[^0-9]/g, '').slice(0, 4);
+      calc();
+    });
+
+    input.addEventListener('focus', () => {
+      // Select all on focus so the user can immediately type a new value.
+      setTimeout(() => input.select(), 0);
+    });
+
+    input.addEventListener('blur', () => {
+      let n = parseInt(input.value, 10);
+      if (isNaN(n) || n < MIN_GRAMS) n = MIN_GRAMS;
+      if (n > MAX_GRAMS) n = MAX_GRAMS;
+      input.value = n;
+      calc();
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') input.blur();
+      if (e.key === 'ArrowUp')   { e.preventDefault(); step(STEP); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); step(-STEP); }
+    });
+
+    function step(delta) {
+      const n = parseInt(input.value, 10) || 0;
+      input.value = clamp(n + delta);
+      calc();
+    }
+
+    decBtn.addEventListener('click', () => step(-STEP));
+    incBtn.addEventListener('click', () => step(STEP));
+
+    // Future recipe picker placeholder
+    document.getElementById('recipe-pill').addEventListener('click', () => {
+      // No-op for now. Will become a recipe picker once there's more than one.
+    });
+
+    // Initial render
+    calc();
+  </script>
+</body>
+</html>
