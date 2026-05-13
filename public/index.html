@@ -12,8 +12,20 @@
   <meta name="apple-mobile-web-app-title" content="Nonna Papera" />
   <meta name="theme-color" content="#FAF1D6" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" href="/icons/favicon.png" />
+  <link rel="apple-touch-startup-image" href="/icons/splash.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon.png" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png" />
   <link rel="manifest" href="/manifest.json" />
+
+  <!-- Open Graph / link previews -->
+  <meta property="og:title" content="Nonna Papera" />
+  <meta property="og:description" content="Handmade pasta ratio calculator" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://pasta.danimal.work" />
+  <meta property="og:image" content="https://pasta.danimal.work/icons/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -90,8 +102,8 @@
     .mascot img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: center top;
+      object-fit: contain;
+      object-position: center;
     }
 
     .mascot-fallback {
